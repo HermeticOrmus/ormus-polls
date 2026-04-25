@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Resultados</title>
+  <style>
+    :root {
+      --obsidian: #0B0B0D;
+      --surface: #111114;
+      --surface2: #1a1a1f;
+      --surface3: #222228;
+      --gold: #D29E3D;
+      --gold-dim: rgba(210, 158, 61, 0.15);
+      --gold-glow: rgba(210, 158, 61, 0.25);
+      --copper: #C87A3B;
+      --parchment: #FAF6F0;
+      --muted: #777;
+      --danger: #c0392b;
+      --success: #2ecc71;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--obsidian);
+      color: var(--parchment);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(210, 158, 61, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(11, 11, 13, 0.8) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 640px;
+      padding: 24px 16px 48px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .header .subtitle {
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 16px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover { color: var(--gold); }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--surface2);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .card-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* Stats row */
+    .stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      flex: 1;
+      background: var(--obsidian);
+      border: 1px solid var(--surface2);
+      border-radius: 6px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+
+    /* Ranked entries */
+    .rank-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--surface2);
+    }
+
+    .rank-row:last-child { border-bottom: none; }
+
+    .rank-pos {
+      width: 22px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
+
+    .rank-bar-wrap {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .rank-name {
+      font-size: 0.82rem;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rank-claimed {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rank-bar-track {
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .rank-bar-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+      transition: width 0.6s ease;
+    }
+
+    .rank-row.elected .rank-bar-fill {
+      background: var(--gold);
+    }
+
+    .rank-row.not-elected .rank-bar-fill {
+      background: var(--surface3);
+    }
+
+    .rank-row.not-elected .rank-name {
+      color: var(--muted);
+    }
+
+    .rank-count {
+      font-size: 0.78rem;
+      font-variant-numeric: tabular-nums;
+      color: var(--muted);
+      flex-shrink: 0;
+      min-width: 50px;
+      text-align: right;
+    }
+
+    .rank-count strong {
+      color: var(--parchment);
+      font-weight: 600;
+    }
+
+    .rank-row.not-elected .rank-count strong {
+      color: var(--muted);
+    }
+
+    /* Divider line between elected / not-elected */
+    .cutoff {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      margin: 4px 0;
+    }
+
+    .cutoff-line {
+      flex: 1;
+      height: 1px;
+      background: var(--gold-dim);
+    }
+
+    .cutoff-label {
+      font-size: 0.65rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      flex-shrink: 0;
+    }
+
+    /* Voters list */
+    .voter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--surface2);
+      font-size: 0.78rem;
+    }
+
+    .voter-row:last-child { border-bottom: none; }
+
+    .voter-info .voter-name {
+      font-weight: 500;
+    }
+
+    .voter-info .voter-email {
+      color: var(--muted);
+      font-size: 0.72rem;
+    }
+
+    .voter-selections {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .voter-selection {
+      display: inline-block;
+      padding: 2px 8px;
+      background: var(--gold-dim);
+      border: 1px solid rgba(210, 158, 61, 0.2);
+      border-radius: 3px;
+      font-size: 0.68rem;
+      color: var(--gold);
+    }
+
+    .voter-date {
+      color: var(--muted);
+      font-size: 0.72rem;
+      flex-shrink: 0;
+    }
+
+    /* Toggle */
+    .toggle-btn {
+      background: none;
+      border: 1px solid var(--surface2);
+      color: var(--muted);
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .toggle-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* Login */
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 12px 24px;
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .google-btn:hover {
+      background: var(--gold-dim);
+      border-color: var(--copper);
+      color: var(--parchment);
+    }
+
+    .google-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .google-btn .g-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; }
+
+    .hidden { display: none !important; }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .error-msg {
+      text-align: center;
+      padding: 40px;
+      color: var(--danger);
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 16px 12px calc(32px + env(safe-area-inset-bottom, 0px)); }
+      .card { padding: 16px; }
+      .header h1 { font-size: 1.1rem; }
+      .stats { flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-link">&larr; Todas las encuestas</a>
+
+    <div class="header">
+      <h1 id="poll-title">Resultados</h1>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading-section">
+      <div class="card"><div class="loading">Cargando...</div></div>
+    </div>
+
+    <!-- Login Section (admin gate) -->
+    <div id="login-section" class="hidden">
+      <div class="card">
+        <div class="card-title">Acceso Administrativo</div>
+        <div class="card-desc">Solo el administrador puede ver los resultados detallados.</div>
+
+        <button class="google-btn" id="google-btn" onclick="signInWithGoogle()">
+          <svg class="g-icon" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" opacity=".6"/>
+            <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" opacity=".7"/>
+            <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" opacity=".5"/>
+            <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" opacity=".8"/>
+          </svg>
+          Continuar con Google
+        </button>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results-section" class="hidden">
+      <!-- Stats -->
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-val" id="stat-voters">0</div>
+          <div class="stat-label">Votantes</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="stat-entries">0</div>
+          <div class="stat-label">Candidatos</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="stat-required">0</div>
+          <div class="stat-label">Selecciones</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="stat-status">-</div>
+          <div class="stat-label">Estado</div>
+        </div>
+      </div>
+
+      <!-- Ranked results -->
+      <div class="card">
+        <div class="card-title">Ranking</div>
+        <div id="ranking-list"></div>
+      </div>
+
+      <!-- Voters -->
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+          <div class="card-title" style="margin:0">Votantes</div>
+          <button class="toggle-btn" id="voters-toggle" onclick="toggleVoters()">Mostrar</button>
+        </div>
+        <div id="voters-list" class="hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="/api/config.js"></script>
+
+  <script>
+    firebase.initializeApp(window.FIREBASE_CONFIG);
+
+    const auth = firebase.auth();
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+    const slug = window.location.pathname.split('/')[1];
+    let resultsData = null;
+
+    auth.onAuthStateChanged(async (user) => {
+      document.getElementById('loading-section').classList.add('hidden');
+
+      if (user) {
+        const idToken = await user.getIdToken();
+        await loadResults(idToken);
+      } else {
+        document.getElementById('login-section').classList.remove('hidden');
+        document.getElementById('results-section').classList.add('hidden');
+      }
+    });
+
+    async function signInWithGoogle() {
+      const btn = document.getElementById('google-btn');
+      btn.disabled = true;
+      try {
+        await auth.signInWithPopup(googleProvider);
+      } catch (err) {
+        if (err.code !== 'auth/popup-closed-by-user') {
+          alert(err.message || 'Error');
+        }
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function loadResults(idToken) {
+      try {
+        const res = await fetch(`/api/admin/results/${slug}`, {
+          headers: { 'Authorization': `Bearer ${idToken}` },
+        });
+
+        if (res.status === 403) {
+          document.getElementById('loading-section').innerHTML =
+            '<div class="card"><div class="error-msg">Acceso denegado. Solo el administrador puede ver los resultados.</div></div>';
+          document.getElementById('loading-section').classList.remove('hidden');
+          return;
+        }
+
+        if (!res.ok) throw new Error('Failed to load');
+
+        resultsData = await res.json();
+        renderResults();
+      } catch (err) {
+        document.getElementById('loading-section').innerHTML =
+          '<div class="card"><div class="error-msg">Error al cargar resultados.</div></div>';
+        document.getElementById('loading-section').classList.remove('hidden');
+      }
+    }
+
+    function renderResults() {
+      const d = resultsData;
+
+      document.title = `${d.poll.title} \u2014 Resultados`;
+      document.getElementById('poll-title').textContent = `${d.poll.title} \u2014 Resultados`;
+
+      // Stats
+      document.getElementById('stat-voters').textContent = d.totalVoters;
+      document.getElementById('stat-entries').textContent = d.totalEntries;
+      document.getElementById('stat-required').textContent = d.poll.required;
+      document.getElementById('stat-status').textContent = d.poll.status === 'open' ? 'Abierta' : 'Cerrada';
+
+      // Ranking
+      const list = document.getElementById('ranking-list');
+      list.innerHTML = '';
+      const maxVotes = d.ranked.length > 0 ? d.ranked[0].votes : 1;
+
+      // Build entry → voter lookup
+      const entryVoterMap = {};
+      if (d.voters) {
+        d.voters.forEach(v => {
+          v.selections.forEach(sel => {
+            entryVoterMap[sel] = {
+              name: `${v.firstName} ${v.lastName}`,
+              date: v.votedAt,
+            };
+          });
+        });
+      }
+
+      d.ranked.forEach((entry, i) => {
+        const pos = i + 1;
+        const isElected = pos <= d.poll.required;
+
+        // Insert cutoff line
+        if (pos === d.poll.required + 1) {
+          const cutoff = document.createElement('div');
+          cutoff.className = 'cutoff';
+          cutoff.innerHTML = `
+            <div class="cutoff-line"></div>
+            <div class="cutoff-label">Linea de corte (${d.poll.required})</div>
+            <div class="cutoff-line"></div>
+          `;
+          list.appendChild(cutoff);
+        }
+
+        const row = document.createElement('div');
+        row.className = `rank-row ${isElected ? 'elected' : 'not-elected'}`;
+        const barWidth = maxVotes > 0 ? (entry.votes / maxVotes) * 100 : 0;
+
+        const claimedBy = entryVoterMap[entry.name];
+        const claimedLabel = claimedBy
+          ? `<div class="rank-claimed">${claimedBy.name} &mdash; ${new Date(claimedBy.date + 'Z').toLocaleDateString('es-PA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>`
+          : '';
+
+        row.innerHTML = `
+          <span class="rank-pos">${pos}</span>
+          <div class="rank-bar-wrap">
+            <div class="rank-name">${entry.name}</div>
+            ${claimedLabel}
+            <div class="rank-bar-track">
+              <div class="rank-bar-fill" style="width:${barWidth}%"></div>
+            </div>
+          </div>
+          <span class="rank-count"><strong>${entry.votes}</strong> (${entry.pct}%)</span>
+        `;
+        list.appendChild(row);
+      });
+
+      // Voters
+      const votersList = document.getElementById('voters-list');
+      votersList.innerHTML = '';
+
+      if (d.voters.length === 0) {
+        votersList.innerHTML = '<div style="color:var(--muted);font-size:0.78rem;padding:10px 0">Nadie ha votado aun.</div>';
+      } else {
+        d.voters.forEach(v => {
+          const row = document.createElement('div');
+          row.className = 'voter-row';
+          const date = new Date(v.votedAt + 'Z').toLocaleDateString('es-PA', {
+            day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+          });
+          const selectionsList = v.selections.map(s => `<span class="voter-selection">${s}</span>`).join('');
+          row.innerHTML = `
+            <div class="voter-info">
+              <div class="voter-name">${v.firstName} ${v.lastName}</div>
+              <div class="voter-email">${v.email}</div>
+              <div class="voter-selections">${selectionsList}</div>
+            </div>
+            <div class="voter-date">${date}</div>
+          `;
+          votersList.appendChild(row);
+        });
+      }
+
+      document.getElementById('login-section').classList.add('hidden');
+      document.getElementById('results-section').classList.remove('hidden');
+    }
+
+    function toggleVoters() {
+      const list = document.getElementById('voters-list');
+      const btn = document.getElementById('voters-toggle');
+      if (list.classList.contains('hidden')) {
+        list.classList.remove('hidden');
+        btn.textContent = 'Ocultar';
+      } else {
+        list.classList.add('hidden');
+        btn.textContent = 'Mostrar';
+      }
+    }
+  </script>
+</body>
+</html>

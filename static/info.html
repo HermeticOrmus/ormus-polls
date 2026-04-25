@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Maestros Visibles — Candidatos</title>
+  <style>
+    :root {
+      --obsidian: #0B0B0D;
+      --surface: #111114;
+      --surface2: #1a1a1f;
+      --surface3: #222228;
+      --gold: #D29E3D;
+      --gold-dim: rgba(210, 158, 61, 0.15);
+      --copper: #C87A3B;
+      --parchment: #FAF6F0;
+      --muted: #777;
+      --link: #7AAFCF;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--obsidian);
+      color: var(--parchment);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(210, 158, 61, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(11, 11, 13, 0.8) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 640px;
+      padding: 24px 16px 48px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      font-size: 1.4rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .header .subtitle {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    .vote-link {
+      display: block;
+      text-align: center;
+      margin-bottom: 28px;
+      font-size: 0.78rem;
+      color: var(--gold);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+
+    .vote-link:hover { text-decoration: underline; }
+
+    .master-card {
+      background: var(--surface);
+      border: 1px solid var(--surface2);
+      border-radius: 8px;
+      padding: 20px 22px;
+      margin-bottom: 10px;
+    }
+
+    .master-card .name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .master-card .dates {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    .master-card .description {
+      font-size: 0.82rem;
+      line-height: 1.55;
+      color: var(--parchment);
+      margin-bottom: 10px;
+      opacity: 0.9;
+    }
+
+    .master-card .works {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .master-card .works a {
+      font-size: 0.7rem;
+      color: var(--link);
+      text-decoration: none;
+      background: var(--surface2);
+      padding: 3px 8px;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+
+    .master-card .works a:hover {
+      background: var(--surface3);
+      text-decoration: underline;
+    }
+
+    .divider {
+      text-align: center;
+      color: var(--surface3);
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 16px 12px calc(32px + env(safe-area-inset-bottom, 0px));
+      }
+      .header { margin-bottom: 24px; }
+      .header h1 { font-size: 1.15rem; }
+      .master-card { padding: 16px; }
+      .master-card .name { font-size: 0.9rem; }
+      .master-card .description { font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Maestros Visibles</h1>
+      <div class="subtitle">18 candidatos postulados. Cada votante selecciona 14. Los 14 con mas votos seran los Maestros Visibles elegidos.</div>
+    </div>
+
+    <a class="vote-link" href="/seleccion-maestros-visibles">Ir a votar &rarr;</a>
+
+    <div id="masters"></div>
+  </div>
+
+  <script>
+    const masters = [
+      {
+        name: 'Allan Kardec',
+        dates: '1804 – 1869',
+        desc: 'Pedagogo y espiritista frances. Sistematizo la doctrina espirita a traves de comunicaciones medianicas, estableciendo principios sobre la inmortalidad del alma, la reencarnacion y la evolucion espiritual.',
+        works: [
+          { title: 'El Libro de los Espiritus', url: 'https://en.wikipedia.org/wiki/The_Spirits%27_Book' },
+          { title: 'El Evangelio segun el Espiritismo', url: 'https://en.wikipedia.org/wiki/The_Gospel_According_to_Spiritism' },
+        ]
+      },
+      {
+        name: 'Buckminster Fuller',
+        dates: '1895 – 1983',
+        desc: 'Arquitecto, ingeniero, inventor y visionario estadounidense. Desarrollo la cupula geodesica y acuno el concepto de \"nave espacial Tierra\". Pionero del pensamiento sistemico y el diseno anticipatorio.',
+        works: [
+          { title: 'Operating Manual for Spaceship Earth', url: 'https://en.wikipedia.org/wiki/Operating_Manual_for_Spaceship_Earth' },
+          { title: 'Synergetics', url: 'https://en.wikipedia.org/wiki/Synergetics_(Fuller)' },
+          { title: 'Critical Path', url: 'https://en.wikipedia.org/wiki/Critical_Path_(book)' },
+        ]
+      },
+      {
+        name: 'Carl Jung',
+        dates: '1875 – 1961',
+        desc: 'Psiquiatra y psicologo suizo, fundador de la psicologia analitica. Exploro el inconsciente colectivo, los arquetipos, la sincronicidad y la alquimia como mapa de la transformacion psiquica.',
+        works: [
+          { title: 'El Libro Rojo', url: 'https://en.wikipedia.org/wiki/The_Red_Book_(Jung)' },
+          { title: 'Psicologia y Alquimia', url: 'https://en.wikipedia.org/wiki/Psychology_and_Alchemy' },
+          { title: 'Arquetipos e Inconsciente Colectivo', url: 'https://en.wikipedia.org/wiki/The_Archetypes_and_the_Collective_Unconscious' },
+        ]
+      },
+      {
+        name: 'Charles Thomas Munger',
+        dates: '1924 – 2023',
+        desc: 'Inversor, abogado y filántropo estadounidense. Vicepresidente de Berkshire Hathaway junto a Warren Buffett. Conocido por su enfoque multidisciplinario, modelos mentales y claridad de pensamiento.',
+        works: [
+          { title: 'Poor Charlie\'s Almanack', url: 'https://en.wikipedia.org/wiki/Poor_Charlie%27s_Almanack' },
+          { title: 'The Psychology of Human Misjudgment (talk)', url: 'https://fs.blog/great-talks/psychology-human-misjudgment/' },
+        ]
+      },
+      {
+        name: 'Elon Musk',
+        dates: '1971 –',
+        desc: 'Ingeniero y empresario sudafricano-estadounidense. Fundador de SpaceX, co-fundador de Tesla, Neuralink y The Boring Company. Impulsor de la exploracion espacial, vehiculos electricos e inteligencia artificial.',
+        works: [
+          { title: 'SpaceX', url: 'https://www.spacex.com' },
+          { title: 'Tesla', url: 'https://www.tesla.com' },
+          { title: 'Elon Musk (Isaacson)', url: 'https://en.wikipedia.org/wiki/Elon_Musk_(Isaacson_book)' },
+        ]
+      },
+      {
+        name: 'Fyodor Dostoevski',
+        dates: '1821 – 1881',
+        desc: 'Novelista y filosofo ruso. Exploro las profundidades de la psicologia humana, la moralidad, el sufrimiento y la redencion. Considerado uno de los mas grandes escritores de la literatura universal.',
+        works: [
+          { title: 'Los Hermanos Karamazov', url: 'https://en.wikipedia.org/wiki/The_Brothers_Karamazov' },
+          { title: 'Crimen y Castigo', url: 'https://en.wikipedia.org/wiki/Crime_and_Punishment' },
+          { title: 'El Idiota', url: 'https://en.wikipedia.org/wiki/The_Idiot' },
+        ]
+      },
+      {
+        name: 'Hipocrates',
+        dates: 'c. 460 – c. 370 a.C.',
+        desc: 'Medico griego, padre de la medicina occidental. Separo la medicina de la supersticion, establecio la etica medica con el Juramento Hipocratico y desarrollo la teoria de los cuatro humores.',
+        works: [
+          { title: 'Corpus Hippocraticum', url: 'https://en.wikipedia.org/wiki/Hippocratic_Corpus' },
+          { title: 'Juramento Hipocratico', url: 'https://en.wikipedia.org/wiki/Hippocratic_Oath' },
+        ]
+      },
+      {
+        name: 'Indra Nooyi',
+        dates: '1955 –',
+        desc: 'Empresaria india-estadounidense. CEO de PepsiCo (2006-2018), transformo la compania hacia productos mas saludables bajo su vision \"Performance with Purpose\". Modelo de liderazgo con proposito.',
+        works: [
+          { title: 'My Life in Full', url: 'https://en.wikipedia.org/wiki/My_Life_in_Full' },
+        ]
+      },
+      {
+        name: 'Leonardo da Vinci',
+        dates: '1452 – 1519',
+        desc: 'Polimata del Renacimiento italiano: pintor, ingeniero, anatomista, inventor, arquitecto y cientifico. Encarnacion del ideal del hombre universal, uniendo arte y ciencia en una sola vision.',
+        works: [
+          { title: 'Codex Leicester', url: 'https://en.wikipedia.org/wiki/Codex_Leicester' },
+          { title: 'Tratado de la Pintura', url: 'https://en.wikipedia.org/wiki/A_Treatise_on_Painting' },
+          { title: 'Cuadernos de Leonardo', url: 'https://en.wikipedia.org/wiki/Leonardo_da_Vinci#Journals_and_notes' },
+        ]
+      },
+      {
+        name: 'Marie Curie',
+        dates: '1867 – 1934',
+        desc: 'Fisica y quimica polaca-francesa. Primera mujer en ganar un Premio Nobel y unica persona en ganarlo en dos ciencias distintas (Fisica y Quimica). Pionera en la investigacion de la radiactividad.',
+        works: [
+          { title: 'Investigaciones sobre sustancias radiactivas', url: 'https://en.wikipedia.org/wiki/Marie_Curie#Nobel_Prize_in_Physics' },
+          { title: 'Descubrimiento del Polonio y Radio', url: 'https://en.wikipedia.org/wiki/Marie_Curie#New_elements' },
+        ]
+      },
+      {
+        name: 'Michelangelo Buonarroti',
+        dates: '1475 – 1564',
+        desc: 'Escultor, pintor, arquitecto y poeta del Renacimiento italiano. Creo obras que definen la cumbre del arte occidental: el David, la Capilla Sixtina y la cupula de San Pedro.',
+        works: [
+          { title: 'Capilla Sixtina', url: 'https://en.wikipedia.org/wiki/Sistine_Chapel_ceiling' },
+          { title: 'David', url: 'https://en.wikipedia.org/wiki/David_(Michelangelo)' },
+          { title: 'La Pieta', url: 'https://en.wikipedia.org/wiki/Piet%C3%A0_(Michelangelo)' },
+        ]
+      },
+      {
+        name: 'Miyamoto Musashi',
+        dates: 'c. 1584 – 1645',
+        desc: 'Espadachin, estratega y artista japones. Invicto en mas de 60 duelos. Fundador de la escuela Niten Ichi-ryu de dos espadas. Filosofo de la disciplina, la maestria y el camino del guerrero.',
+        works: [
+          { title: 'El Libro de los Cinco Anillos', url: 'https://en.wikipedia.org/wiki/The_Book_of_Five_Rings' },
+          { title: 'Dokkodo (El Camino de la Soledad)', url: 'https://en.wikipedia.org/wiki/Dokk%C5%8Dd%C5%8D' },
+        ]
+      },
+      {
+        name: 'Rene Schwaller de Lubicz',
+        dates: '1887 – 1961',
+        desc: 'Matematico, filosofo y egiptólogo alsaciano. Estudio el simbolismo del Templo de Luxor durante 15 anos, revelando un conocimiento faraónico de proporciones sagradas, armonia y consciencia.',
+        works: [
+          { title: 'The Temple of Man', url: 'https://en.wikipedia.org/wiki/The_Temple_of_Man' },
+          { title: 'Symbol and the Symbolic', url: 'https://en.wikipedia.org/wiki/R._A._Schwaller_de_Lubicz#Works' },
+          { title: 'Sacred Science', url: 'https://en.wikipedia.org/wiki/R._A._Schwaller_de_Lubicz#Works' },
+        ]
+      },
+      {
+        name: 'Sanat Kumara',
+        dates: 'Tradicion teosofica',
+        desc: 'Ser avanzado de la tradicion teosofica y esoterica. Conocido como el Senor del Mundo y regente de la Tierra en la jerarquia espiritual. Asociado con la llama de Venus y la evolucion planetaria.',
+        works: [
+          { title: 'Tradicion Teosofica', url: 'https://en.wikipedia.org/wiki/Sanat_Kumara' },
+        ]
+      },
+      {
+        name: 'Serapis Bey',
+        dates: 'Tradicion esoterica',
+        desc: 'Maestro Ascendido asociado con el Cuarto Rayo de la Pureza y la Ascension. En la tradicion esoterica, guardian de la Llama de la Ascension y guia de quienes buscan la elevacion espiritual.',
+        works: [
+          { title: 'Tradicion de los Maestros Ascendidos', url: 'https://en.wikipedia.org/wiki/Serapis_Bey' },
+        ]
+      },
+      {
+        name: 'SPDA Jessa O\'My Heart',
+        dates: 'Tradicion SPDA',
+        desc: 'El Hombre que nunca existio.',
+        works: []
+      },
+      {
+        name: 'SPDA Querubin Queta',
+        dates: '1913 – 2023',
+        desc: 'Taita Querubin Queta Alvarado, maxima autoridad del pueblo Cofan de la Amazonia colombiana. Medico tradicional, curandero y guia espiritual con mas de un siglo de sabiduria en medicina ancestral con yage (ayahuasca). Tomo yage por primera vez a los 8 anos en 1921, iniciando un camino de casi cien anos con la planta sagrada. Reconocido como biblioteca viviente de la sabiduria vegetal y decano de los sanadores con ayahuasca en el mundo. Fallecio a los 110 anos.',
+        works: [
+          { title: 'Taita Querubin — Plantaforma', url: 'https://www.plantaforma.org/taita-querubin/' },
+          { title: 'Mi encuentro con el Taita (Takiwasi)', url: 'https://www.takiwasi.com/es/querubin-queta.php' },
+          { title: 'Conexion Putumayo — Quien fue el Taita', url: 'https://conexionputumayo.com/quien-fue-el-taita-querubin-queta-representado-en-la-carroza-ganadora-de-los-carnavales-de-blancos-y-negros-en-pasto/' },
+        ]
+      },
+      {
+        name: 'Warren Buffett',
+        dates: '1930 –',
+        desc: 'Inversor y empresario estadounidense. CEO de Berkshire Hathaway, conocido como el \"Oraculo de Omaha\". Maestro de la inversion en valor, la paciencia y el pensamiento a largo plazo.',
+        works: [
+          { title: 'Cartas a los Accionistas', url: 'https://www.berkshirehathaway.com/letters/letters.html' },
+          { title: 'The Snowball (Schroeder)', url: 'https://en.wikipedia.org/wiki/The_Snowball:_Warren_Buffett_and_the_Business_of_Life' },
+        ]
+      },
+    ];
+
+    const container = document.getElementById('masters');
+
+    masters.forEach((m, i) => {
+      const card = document.createElement('div');
+      card.className = 'master-card';
+
+      let worksHtml = '';
+      if (m.works.length > 0) {
+        worksHtml = '<div class="works">' +
+          m.works.map(w => `<a href="${w.url}" target="_blank" rel="noopener">${w.title}</a>`).join('') +
+          '</div>';
+      }
+
+      card.innerHTML = `
+        <div class="name">${m.name}</div>
+        <div class="dates">${m.dates}</div>
+        <div class="description">${m.desc}</div>
+        ${worksHtml}
+      `;
+      container.appendChild(card);
+    });
+  </script>
+</body>
+</html>

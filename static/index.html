@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Encuestas</title>
+  <style>
+    :root {
+      --obsidian: #0B0B0D;
+      --surface: #111114;
+      --surface2: #1a1a1f;
+      --surface3: #222228;
+      --gold: #D29E3D;
+      --gold-dim: rgba(210, 158, 61, 0.15);
+      --copper: #C87A3B;
+      --parchment: #FAF6F0;
+      --muted: #777;
+      --success: #2ecc71;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--obsidian);
+      color: var(--parchment);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(210, 158, 61, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(11, 11, 13, 0.8) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 560px;
+      padding: 24px 16px 48px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .header .subtitle {
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    .poll-card {
+      display: block;
+      background: var(--surface);
+      border: 1px solid var(--surface2);
+      border-radius: 8px;
+      padding: 20px 22px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      color: var(--parchment);
+      transition: all 0.15s;
+    }
+
+    .poll-card:hover {
+      border-color: var(--gold);
+      background: var(--gold-dim);
+    }
+
+    .poll-card .poll-title {
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .poll-card .poll-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .poll-card .poll-meta .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .poll-card .poll-meta .status .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .poll-card .poll-meta .status .dot.closed {
+      background: var(--muted);
+    }
+
+    .empty {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 16px 12px calc(32px + env(safe-area-inset-bottom, 0px));
+      }
+      .header { margin-bottom: 28px; }
+      .header h1 { font-size: 1.2rem; }
+      .poll-card { padding: 16px; min-height: 48px; }
+      .poll-card .poll-title { font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Encuestas</h1>
+    </div>
+
+    <div id="polls-list">
+      <div class="empty">Cargando...</div>
+    </div>
+  </div>
+
+  <script>
+    (async function() {
+      const list = document.getElementById('polls-list');
+
+      try {
+        const res = await fetch('/api/polls');
+        const polls = await res.json();
+
+        if (polls.length === 0) {
+          list.innerHTML = '<div class="empty">No hay encuestas todavia.</div>';
+          return;
+        }
+
+        list.innerHTML = '';
+        for (const poll of polls) {
+          const date = new Date(poll.created_at + 'Z').toLocaleDateString('es-PA', {
+            day: 'numeric', month: 'short', year: 'numeric'
+          });
+          const isOpen = poll.status === 'open';
+
+          const a = document.createElement('a');
+          a.href = `/${poll.slug}`;
+          a.className = 'poll-card';
+          a.innerHTML = `
+            <div class="poll-title">${poll.title}</div>
+            <div class="poll-meta">
+              <span class="status">
+                <span class="dot${isOpen ? '' : ' closed'}"></span>
+                ${isOpen ? 'Abierta' : 'Cerrada'}
+              </span>
+              <span>${poll.totalVoters} voto${poll.totalVoters !== 1 ? 's' : ''}</span>
+              <span>${date}</span>
+            </div>
+          `;
+          list.appendChild(a);
+        }
+      } catch (err) {
+        list.innerHTML = '<div class="empty">Error al cargar encuestas.</div>';
+      }
+    })();
+  </script>
+</body>
+</html>
