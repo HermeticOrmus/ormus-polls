@@ -1,6 +1,23 @@
-# ormus-polls
+<p align="center">
+  <img src="https://ormus.solutions/mascot/chain_braces_to_swan.gif" alt="ormus-polls" width="128" style="image-rendering: pixelated;" />
+</p>
 
-> Self-hosted polling with Firebase Auth Google Sign-In. Express + SQLite, ~500 lines of server.
+<h1 align="center">ormus-polls</h1>
+
+<p align="center">
+  <em>Self-hosted polling with Firebase Auth Google Sign-In. Express + SQLite, single-file server.</em>
+</p>
+
+<p align="center">
+  <a href="https://github.com/HermeticOrmus/ormus-polls/stargazers"><img src="https://img.shields.io/github/stars/HermeticOrmus/ormus-polls?style=flat-square&color=aa8142" alt="Stars" /></a>
+  <a href="https://github.com/HermeticOrmus/ormus-polls/blob/main/LICENSE"><img src="https://img.shields.io/github/license/HermeticOrmus/ormus-polls?style=flat-square&color=aa8142" alt="License" /></a>
+  <a href="https://github.com/HermeticOrmus/ormus-polls/commits"><img src="https://img.shields.io/github/last-commit/HermeticOrmus/ormus-polls?style=flat-square&color=aa8142" alt="Last Commit" /></a>
+  <img src="https://img.shields.io/badge/Claude_Code-aa8142?style=flat-square&logo=anthropic&logoColor=white" alt="Claude Code" />
+</p>
+
+---
+
+> **Self-hosted polling with Firebase Auth Google Sign-In. Express + SQLite, ~500 lines of server.**
 
 A minimal-but-complete polling app you run yourself. Create polls with required-selection counts and entries, share the slug URL, voters sign in with Google (via Firebase Auth), each email votes once. Admins see full per-voter breakdowns; everyone else sees aggregated tallies.
 
